@@ -15,7 +15,6 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
   { label: 'Students', icon: GraduationCap, path: '/admin/students' },
   { label: 'Teachers', icon: School, path: '/admin/teachers' },
-  { label: 'Classes', icon: BookOpen, path: '/admin/classes' },
   { label: 'Subjects', icon: Library, path: '/admin/subjects' },
 ]
 
