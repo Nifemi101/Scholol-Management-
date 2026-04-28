@@ -3,14 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import {
-  Search,
-  Trash2,
-  PlusSquare,
-  ArrowLeft,
-  GraduationCap,
-  Filter,
-} from 'lucide-react'
+import { Search, Trash2, PlusSquare, ArrowLeft, GraduationCap, Filter, AlertTriangle, X } from 'lucide-react'
 
 interface Student {
   id: string
@@ -28,6 +21,63 @@ interface Class {
   name: string
 }
 
+// Custom Confirmation Modal Component
+function ConfirmModal({
+  studentNumber,
+  onConfirm,
+  onCancel,
+}: {
+  studentNumber: string
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <AlertTriangle size={20} className="text-red-500" />
+            </div>
+            <h3 className="font-semibold text-gray-800">Delete Student</h3>
+          </div>
+          <button
+            onClick={onCancel}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X size={16} className="text-gray-500" />
+          </button>
+        </div>
+
+        <p className="text-sm text-gray-600 mb-1">
+          Are you sure you want to delete student:
+        </p>
+        <p className="text-sm font-semibold text-gray-800 mb-4">
+          {studentNumber}
+        </p>
+        <p className="text-xs text-red-500 mb-6">
+          ⚠️ This action cannot be undone.
+        </p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+          >
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function StudentsPage() {
   const router = useRouter()
   const supabase = createClient()
@@ -38,13 +88,13 @@ export default function StudentsPage() {
   const [selectedClass, setSelectedClass] = useState('all')
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmStudent, setConfirmStudent] = useState<{ id: string; student_number: string } | null>(null)
 
   useEffect(() => {
     fetchData()
   }, [])
 
   const fetchData = async () => {
-    // Fetch all students with their class name
     const { data: studentsData } = await supabase
       .from('pre_registered_students')
       .select(`
@@ -59,7 +109,6 @@ export default function StudentsPage() {
       `)
       .order('created_at', { ascending: false })
 
-    // Fetch all classes for filter dropdown
     const { data: classesData } = await supabase
       .from('classes')
       .select('id, name')
@@ -70,42 +119,34 @@ export default function StudentsPage() {
     setLoading(false)
   }
 
-  const handleDelete = async (id: string, studentNumber: string) => {
-    const confirmed = confirm(`Are you sure you want to delete student ${studentNumber}? This cannot be undone.`)
-    if (!confirmed) return
-
+  const handleDeleteConfirmed = async () => {
+    if (!confirmStudent) return
+    const { id, student_number } = confirmStudent
     setDeleting(id)
+    setConfirmStudent(null)
 
-    // Delete from profiles if registered
     await supabase
       .from('student_profiles')
       .delete()
-      .eq('student_number', studentNumber)
+      .eq('student_number', student_number)
 
-    // Delete from pre_registered_students
     const { error } = await supabase
       .from('pre_registered_students')
       .delete()
       .eq('id', id)
 
-    if (error) {
-      alert('Failed to delete student. Please try again.')
-    } else {
+    if (!error) {
       setStudents((prev) => prev.filter((s) => s.id !== id))
     }
 
     setDeleting(null)
   }
 
-  // Filter students by search and class
   const filtered = students.filter((s) => {
     const matchesSearch =
       s.student_number.toLowerCase().includes(search.toLowerCase()) ||
       `${s.first_name} ${s.last_name}`.toLowerCase().includes(search.toLowerCase())
-
-    const matchesClass =
-      selectedClass === 'all' || s.class_id === selectedClass
-
+    const matchesClass = selectedClass === 'all' || s.class_id === selectedClass
     return matchesSearch && matchesClass
   })
 
@@ -120,6 +161,16 @@ export default function StudentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+
+      {/* Custom Confirm Modal */}
+      {confirmStudent && (
+        <ConfirmModal
+          studentNumber={confirmStudent.student_number}
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setConfirmStudent(null)}
+        />
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -224,7 +275,7 @@ export default function StudentsPage() {
                     </td>
                     <td className="px-5 py-3">
                       <button
-                        onClick={() => handleDelete(student.id, student.student_number)}
+                        onClick={() => setConfirmStudent({ id: student.id, student_number: student.student_number })}
                         disabled={deleting === student.id}
                         className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                       >
