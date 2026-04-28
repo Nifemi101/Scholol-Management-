@@ -1,25 +1,33 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
-  Search, Trash2, PlusSquare, ArrowLeft,
-  School, Filter, BookOpen, X, AlertTriangle, ChevronDown
-} from 'lucide-react'
+  Search,
+  Trash2,
+  PlusSquare,
+  ArrowLeft,
+  School,
+  Filter,
+  BookOpen,
+  X,
+  AlertTriangle,
+  ChevronDown,
+} from "lucide-react";
 
 interface Teacher {
-  id: string
-  teacher_number: string
-  first_name: string
-  last_name: string
-  is_registered: boolean
-  subjects?: { id: string; name: string }[]
+  id: string;
+  teacher_number: string;
+  first_name: string;
+  last_name: string;
+  is_registered: boolean;
+  subjects?: { id: string; name: string }[];
 }
 
 interface Subject {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 function ConfirmModal({
@@ -27,9 +35,9 @@ function ConfirmModal({
   onConfirm,
   onCancel,
 }: {
-  teacherNumber: string
-  onConfirm: () => void
-  onCancel: () => void
+  teacherNumber: string;
+  onConfirm: () => void;
+  onCancel: () => void;
 }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -41,13 +49,22 @@ function ConfirmModal({
             </div>
             <h3 className="font-semibold text-gray-800">Delete Teacher</h3>
           </div>
-          <button onClick={onCancel} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onCancel}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <X size={16} className="text-gray-500" />
           </button>
         </div>
-        <p className="text-sm text-gray-600 mb-1">Are you sure you want to delete teacher:</p>
-        <p className="text-sm font-semibold text-gray-800 mb-4">{teacherNumber}</p>
-        <p className="text-xs text-red-500 mb-6">⚠️ This action cannot be undone.</p>
+        <p className="text-sm text-gray-600 mb-1">
+          Are you sure you want to delete teacher:
+        </p>
+        <p className="text-sm font-semibold text-gray-800 mb-4">
+          {teacherNumber}
+        </p>
+        <p className="text-xs text-red-500 mb-6">
+          ⚠️ This action cannot be undone.
+        </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
@@ -64,7 +81,7 @@ function ConfirmModal({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function AssignSubjectModal({
@@ -73,28 +90,28 @@ function AssignSubjectModal({
   onClose,
   onSave,
 }: {
-  teacher: Teacher
-  allSubjects: Subject[]
-  onClose: () => void
-  onSave: (teacherId: string, subjectIds: string[]) => void
+  teacher: Teacher;
+  allSubjects: Subject[];
+  onClose: () => void;
+  onSave: (teacherId: string, subjectIds: string[]) => void;
 }) {
   const [selected, setSelected] = useState<string[]>(
-    teacher.subjects?.map((s) => s.id) || []
-  )
-  const [saving, setSaving] = useState(false)
+    teacher.subjects?.map((s) => s.id) || [],
+  );
+  const [saving, setSaving] = useState(false);
 
   const toggle = (id: string) => {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    )
-  }
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
+    );
+  };
 
   const handleSave = async () => {
-    setSaving(true)
-    await onSave(teacher.id, selected)
-    setSaving(false)
-    onClose()
-  }
+    setSaving(true);
+    await onSave(teacher.id, selected);
+    setSaving(false);
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -103,10 +120,14 @@ function AssignSubjectModal({
           <div>
             <h3 className="font-semibold text-gray-800">Assign Subjects</h3>
             <p className="text-xs text-gray-500 mt-0.5">
-              {teacher.first_name} {teacher.last_name} ({teacher.teacher_number})
+              {teacher.first_name} {teacher.last_name} ({teacher.teacher_number}
+              )
             </p>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <X size={16} className="text-gray-500" />
           </button>
         </div>
@@ -146,102 +167,128 @@ function AssignSubjectModal({
             disabled={saving}
             className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            {saving ? 'Saving...' : 'Save Subjects'}
+            {saving ? "Saving..." : "Save Subjects"}
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function TeachersPage() {
-  const router = useRouter()
-  const supabase = createClient()
+  const router = useRouter();
+  const supabase = createClient();
 
-  const [teachers, setTeachers] = useState<Teacher[]>([])
-  const [subjects, setSubjects] = useState<Subject[]>([])
-  const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [deleting, setDeleting] = useState<string | null>(null)
-  const [confirmTeacher, setConfirmTeacher] = useState<{ id: string; teacher_number: string } | null>(null)
-  const [assigningTeacher, setAssigningTeacher] = useState<Teacher | null>(null)
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmTeacher, setConfirmTeacher] = useState<{
+    id: string;
+    teacher_number: string;
+  } | null>(null);
+  const [assigningTeacher, setAssigningTeacher] = useState<Teacher | null>(
+    null,
+  );
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     const { data: teachersData } = await supabase
-      .from('pre_registered_teachers')
-      .select('id, teacher_number, first_name, last_name, is_registered')
-      .order('created_at', { ascending: false })
+      .from("pre_registered_teachers")
+      .select("id, teacher_number, first_name, last_name, is_registered")
+      .order("created_at", { ascending: false });
 
     const { data: subjectsData } = await supabase
-      .from('subjects')
-      .select('id, name')
-      .order('name')
+      .from("subjects")
+      .select("id, name")
+      .order("name");
 
-    // Fetch assigned subjects per teacher
     const { data: teacherSubjectsData } = await supabase
-      .from('teacher_subjects')
-      .select('teacher_id, subjects(id, name)')
+      .from("teacher_subjects")
+      .select("teacher_id, subjects(id, name)");
 
     if (teachersData) {
       const enriched = teachersData.map((t: any) => ({
         ...t,
-        subjects: teacherSubjectsData
-          ?.filter((ts: any) => ts.teacher_id === t.id)
-          .map((ts: any) => ts.subjects) || [],
-      }))
-      setTeachers(enriched)
+        subjects:
+          teacherSubjectsData
+            ?.filter((ts: any) => ts.teacher_id === t.id)
+            .map((ts: any) => ts.subjects) || [],
+      }));
+      setTeachers(enriched);
     }
 
-    if (subjectsData) setSubjects(subjectsData)
-    setLoading(false)
-  }
+    if (subjectsData) setSubjects(subjectsData);
+    setLoading(false);
+  };
 
   const handleDeleteConfirmed = async () => {
-    if (!confirmTeacher) return
-    const { id, teacher_number } = confirmTeacher
-    setDeleting(id)
-    setConfirmTeacher(null)
+    if (!confirmTeacher) return;
+    const { id, teacher_number } = confirmTeacher;
+    setDeleting(id);
+    setConfirmTeacher(null);
 
-    await supabase.from('teacher_profiles').delete().eq('teacher_number', teacher_number)
-    await supabase.from('teacher_subjects').delete().eq('teacher_id', id)
-    const { error } = await supabase.from('pre_registered_teachers').delete().eq('id', id)
+    await supabase
+      .from("teacher_profiles")
+      .delete()
+      .eq("teacher_number", teacher_number);
+    await supabase.from("teacher_subjects").delete().eq("teacher_id", id);
+    const { error } = await supabase
+      .from("pre_registered_teachers")
+      .delete()
+      .eq("id", id);
 
-    if (!error) setTeachers((prev) => prev.filter((t) => t.id !== id))
-    setDeleting(null)
-  }
+    if (!error) setTeachers((prev) => prev.filter((t) => t.id !== id));
+    setDeleting(null);
+  };
 
-  const handleSaveSubjects = async (teacherId: string, subjectIds: string[]) => {
+  const handleSaveSubjects = async (
+    teacherId: string,
+    subjectIds: string[],
+  ) => {
     // Delete existing assignments
-    await supabase.from('teacher_subjects').delete().eq('teacher_id', teacherId)
+    await supabase
+      .from("teacher_subjects")
+      .delete()
+      .eq("teacher_id", teacherId);
 
     // Insert new assignments
     if (subjectIds.length > 0) {
-      await supabase.from('teacher_subjects').insert(
-        subjectIds.map((subject_id) => ({ teacher_id: teacherId, subject_id }))
-      )
+      await supabase
+        .from("teacher_subjects")
+        .insert(
+          subjectIds.map((subject_id) => ({
+            teacher_id: teacherId,
+            subject_id,
+          })),
+        );
     }
 
     // Refresh data
-    await fetchData()
-  }
+    await fetchData();
+  };
 
-  const filtered = teachers.filter((t) =>
-    t.teacher_number.toLowerCase().includes(search.toLowerCase()) ||
-    `${t.first_name} ${t.last_name}`.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = teachers.filter(
+    (t) =>
+      t.teacher_number.toLowerCase().includes(search.toLowerCase()) ||
+      `${t.first_name} ${t.last_name}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
+  );
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-gray-500 text-sm">Loading teachers...</p>
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-gray-500 text-sm">Loading teachers...</p>
+        </div>
       </div>
-    </div>
-  )
+    );
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -265,7 +312,10 @@ export default function TeachersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/admin')} className="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+          <button
+            onClick={() => router.push("/admin")}
+            className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+          >
             <ArrowLeft size={18} className="text-gray-600" />
           </button>
           <div>
@@ -273,11 +323,13 @@ export default function TeachersPage() {
               <School size={22} className="text-blue-600" />
               Teachers
             </h1>
-            <p className="text-xs text-gray-500">{teachers.length} total teachers</p>
+            <p className="text-xs text-gray-500">
+              {teachers.length} total teachers
+            </p>
           </div>
         </div>
         <button
-          onClick={() => router.push('/admin/add-teacher')}
+          onClick={() => router.push("/admin/add-teacher")}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
         >
           <PlusSquare size={16} />
@@ -288,7 +340,10 @@ export default function TeachersPage() {
       {/* Search */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
           <input
             type="text"
             placeholder="Search by teacher ID or name..."
@@ -315,13 +370,21 @@ export default function TeachersPage() {
             <tbody className="divide-y divide-gray-100">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-gray-400">
-                    {search ? 'No teachers match your search.' : 'No teachers added yet. Click "Add Teacher" to get started.'}
+                  <td
+                    colSpan={5}
+                    className="px-5 py-10 text-center text-gray-400"
+                  >
+                    {search
+                      ? "No teachers match your search."
+                      : 'No teachers added yet. Click "Add Teacher" to get started.'}
                   </td>
                 </tr>
               ) : (
                 filtered.map((teacher) => (
-                  <tr key={teacher.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={teacher.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-5 py-3 font-mono font-medium text-blue-600">
                       {teacher.teacher_number}
                     </td>
@@ -332,20 +395,29 @@ export default function TeachersPage() {
                       <div className="flex flex-wrap gap-1">
                         {teacher.subjects && teacher.subjects.length > 0 ? (
                           teacher.subjects.map((s) => (
-                            <span key={s.id} className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                            <span
+                              key={s.id}
+                              className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium"
+                            >
                               {s.name}
                             </span>
                           ))
                         ) : (
-                          <span className="text-gray-400 italic text-xs">No subjects assigned</span>
+                          <span className="text-gray-400 italic text-xs">
+                            No subjects assigned
+                          </span>
                         )}
                       </div>
                     </td>
                     <td className="px-5 py-3">
                       {teacher.is_registered ? (
-                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">Registered</span>
+                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                          Registered
+                        </span>
                       ) : (
-                        <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">Pending</span>
+                        <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                          Pending
+                        </span>
                       )}
                     </td>
                     <td className="px-5 py-3">
@@ -358,7 +430,12 @@ export default function TeachersPage() {
                           Assign Subjects
                         </button>
                         <button
-                          onClick={() => setConfirmTeacher({ id: teacher.id, teacher_number: teacher.teacher_number })}
+                          onClick={() =>
+                            setConfirmTeacher({
+                              id: teacher.id,
+                              teacher_number: teacher.teacher_number,
+                            })
+                          }
                           disabled={deleting === teacher.id}
                           className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                         >
@@ -374,5 +451,5 @@ export default function TeachersPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
