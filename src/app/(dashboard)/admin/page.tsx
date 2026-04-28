@@ -1,15 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
-  LayoutDashboard,
   GraduationCap,
   BookOpen,
   School,
   Library,
-  LogOut,
   Calendar,
   Clock,
   PlusSquare,
@@ -31,17 +29,8 @@ interface ClassStat {
   girls: number
 }
 
-const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-  { label: 'Students', icon: GraduationCap, path: '/admin/students' },
-  { label: 'Teachers', icon: School, path: '/admin/teachers' },
-  { label: 'Classes', icon: BookOpen, path: '/admin/classes' },
-  { label: 'Subjects', icon: Library, path: '/admin/subjects' },
-]
-
 export default function AdminDashboard() {
   const router = useRouter()
-  const pathname = usePathname()
   const supabase = createClient()
 
   const [stats, setStats] = useState<Stats>({ totalStudents: 0, totalTeachers: 0, totalClasses: 0, totalSubjects: 0 })
@@ -109,11 +98,6 @@ export default function AdminDashboard() {
     setLoading(false)
   }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/admin-login')
-  }
-
   const formatDate = (date: Date) =>
     date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
@@ -137,176 +121,128 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-56 bg-[#1e2a3b] text-white flex flex-col fixed h-full z-10">
-        <div className="px-5 py-5 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-              S
-            </div>
-            <div>
-              <p className="text-sm font-bold leading-tight">School MS</p>
-              <p className="text-xs text-gray-400">Management System</p>
-            </div>
-          </div>
+    <div className="flex-1 p-6">
+      {/* Top Bar */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <BarChart2 size={22} className="text-blue-600" />
+          Dashboard
+        </h2>
+        <div className="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm">
+          <span>Welcome,</span>
+          <span className="font-semibold text-blue-600">{adminName}</span>
         </div>
+      </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <button
-                key={item.path}
-                onClick={() => router.push(item.path)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  pathname === item.path
-                    ? 'bg-blue-600 text-white font-medium'
-                    : 'text-gray-300 hover:bg-white/10'
-                }`}
-              >
-                <Icon size={18} />
-                <span>{item.label}</span>
-              </button>
-            )
-          })}
-        </nav>
+      {/* Greeting Banner */}
+      <div className="bg-linear-to-r from-blue-700 to-blue-500 rounded-2xl p-5 mb-6 text-white flex justify-between items-center">
+        <div>
+          <h3 className="text-xl font-bold">{getGreeting()}, {adminName}!</h3>
+          <p className="text-blue-100 text-sm mt-1 flex items-center gap-3">
+            <span className="flex items-center gap-1">
+              <Calendar size={14} />
+              {formatDate(currentTime)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock size={14} />
+              {formatTime(currentTime)}
+            </span>
+          </p>
+        </div>
+        <button
+          onClick={() => router.push('/admin/add-student')}
+          className="bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2"
+        >
+          <PlusSquare size={16} />
+          Add Student
+        </button>
+      </div>
 
-        <div className="px-3 py-4 border-t border-white/10">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: 'Total Students', value: stats.totalStudents, Icon: GraduationCap, color: 'bg-green-500', path: '/admin/students' },
+          { label: 'Total Teachers', value: stats.totalTeachers, Icon: School, color: 'bg-blue-500', path: '/admin/teachers' },
+          { label: 'Total Classes', value: stats.totalClasses, Icon: BookOpen, color: 'bg-orange-500', path: '/admin/classes' },
+          { label: 'Total Subjects', value: stats.totalSubjects, Icon: Library, color: 'bg-purple-500', path: '/admin/subjects' },
+        ].map((card) => (
           <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+            key={card.label}
+            onClick={() => router.push(card.path)}
+            className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition-shadow text-left w-full"
           >
-            <LogOut size={18} />
-            <span>Logout</span>
+            <div>
+              <p className="text-xs text-gray-500 mb-1">{card.label}</p>
+              <p className="text-2xl font-bold text-gray-800">{card.value}</p>
+            </div>
+            <div className={`${card.color} w-10 h-10 rounded-lg flex items-center justify-center`}>
+              <card.Icon size={20} color="white" />
+            </div>
           </button>
-        </div>
-      </aside>
+        ))}
+      </div>
 
-      {/* Main Content */}
-      <main className="ml-56 flex-1 p-6">
-        {/* Top Bar */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <BarChart2 size={22} className="text-blue-600" />
-            Dashboard
-          </h2>
-          <div className="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm">
-            <span>Welcome,</span>
-            <span className="font-semibold text-blue-600">{adminName}</span>
-          </div>
-        </div>
-
-        {/* Greeting Banner */}
-        <div className="bg-linear-to-r from-blue-700 to-blue-500 rounded-2xl p-5 mb-6 text-white flex justify-between items-center">
-          <div>
-            <h3 className="text-xl font-bold">{getGreeting()}, {adminName}!</h3>
-            <p className="text-blue-100 text-sm mt-1 flex items-center gap-3">
-              <span className="flex items-center gap-1">
-                <Calendar size={14} />
-                {formatDate(currentTime)}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock size={14} />
-                {formatTime(currentTime)}
-              </span>
-            </p>
-          </div>
+      {/* Class Statistics Table */}
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+            <BarChart2 size={18} className="text-blue-600" />
+            Class Statistics
+          </h3>
           <button
             onClick={() => router.push('/admin/add-student')}
-            className="bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2"
+            className="text-sm bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
           >
-            <PlusSquare size={16} />
+            <PlusSquare size={15} />
             Add Student
           </button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {[
-            { label: 'Total Students', value: stats.totalStudents, Icon: GraduationCap, color: 'bg-green-500', path: '/admin/students' },
-            { label: 'Total Teachers', value: stats.totalTeachers, Icon: School, color: 'bg-blue-500', path: '/admin/teachers' },
-            { label: 'Total Classes', value: stats.totalClasses, Icon: BookOpen, color: 'bg-orange-500', path: '/admin/classes' },
-            { label: 'Total Subjects', value: stats.totalSubjects, Icon: Library, color: 'bg-purple-500', path: '/admin/subjects' },
-          ].map((card) => (
-            <button
-              key={card.label}
-              onClick={() => router.push(card.path)}
-              className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition-shadow text-left w-full"
-            >
-              <div>
-                <p className="text-xs text-gray-500 mb-1">{card.label}</p>
-                <p className="text-2xl font-bold text-gray-800">{card.value}</p>
-              </div>
-              <div className={`${card.color} w-10 h-10 rounded-lg flex items-center justify-center`}>
-                <card.Icon size={20} color="white" />
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Class Statistics Table */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
-            <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-              <BarChart2 size={18} className="text-blue-600" />
-              Class Statistics
-            </h3>
-            <button
-              onClick={() => router.push('/admin/add-student')}
-              className="text-sm bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
-            >
-              <PlusSquare size={15} />
-              Add Student
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+              <tr>
+                <th className="px-5 py-3 text-left">Class Name</th>
+                <th className="px-5 py-3 text-left">Level</th>
+                <th className="px-5 py-3 text-left">Number of Students</th>
+                <th className="px-5 py-3 text-left">Boys</th>
+                <th className="px-5 py-3 text-left">Girls</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {classStats.length === 0 ? (
                 <tr>
-                  <th className="px-5 py-3 text-left">Class Name</th>
-                  <th className="px-5 py-3 text-left">Level</th>
-                  <th className="px-5 py-3 text-left">Number of Students</th>
-                  <th className="px-5 py-3 text-left">Boys</th>
-                  <th className="px-5 py-3 text-left">Girls</th>
+                  <td colSpan={5} className="px-5 py-8 text-center text-gray-400">
+                    No classes found. Add classes to see statistics here.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {classStats.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-5 py-8 text-center text-gray-400">
-                      No classes found. Add classes to see statistics here.
+              ) : (
+                classStats.map((cls, i) => (
+                  <tr key={i} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-5 py-3 font-medium text-gray-800">{cls.name}</td>
+                    <td className="px-5 py-3 text-gray-500">{cls.level}</td>
+                    <td className="px-5 py-3">
+                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        {cls.total} students
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        {cls.boys}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        {cls.girls}
+                      </span>
                     </td>
                   </tr>
-                ) : (
-                  classStats.map((cls, i) => (
-                    <tr key={i} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-3 font-medium text-gray-800">{cls.name}</td>
-                      <td className="px-5 py-3 text-gray-500">{cls.level}</td>
-                      <td className="px-5 py-3">
-                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                          {cls.total} students
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                          {cls.boys}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                          {cls.girls}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
