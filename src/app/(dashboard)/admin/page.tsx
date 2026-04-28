@@ -23,7 +23,6 @@ interface Stats {
 
 interface ClassStat {
   name: string;
-  level: string;
   total: number;
   boys: number;
   girls: number;
@@ -91,17 +90,16 @@ export default function AdminDashboard() {
     });
 
     const { data: classes } = await supabase.from("classes").select(`
-    name,
-    pre_registered_students (
-      id,
-      sex
-    )
-  `);
+      name,
+      pre_registered_students (
+        id,
+        sex
+      )
+    `);
 
     if (classes) {
       const formatted = classes.map((c: any) => ({
         name: c.name,
-        level: c.name.split(" ")[0],
         total: c.pre_registered_students?.length || 0,
         boys:
           c.pre_registered_students?.filter((s: any) => s.sex === "male")
@@ -255,7 +253,6 @@ export default function AdminDashboard() {
             <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
               <tr>
                 <th className="px-5 py-3 text-left">Class Name</th>
-                <th className="px-5 py-3 text-left">Level</th>
                 <th className="px-5 py-3 text-left">Number of Students</th>
                 <th className="px-5 py-3 text-left">Boys</th>
                 <th className="px-5 py-3 text-left">Girls</th>
@@ -265,7 +262,7 @@ export default function AdminDashboard() {
               {classStats.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={4}
                     className="px-5 py-8 text-center text-gray-400"
                   >
                     No classes found. Add classes to see statistics here.
@@ -277,7 +274,6 @@ export default function AdminDashboard() {
                     <td className="px-5 py-3 font-medium text-gray-800">
                       {cls.name}
                     </td>
-                    <td className="px-5 py-3 text-gray-500">{cls.level}</td>
                     <td className="px-5 py-3">
                       <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
                         {cls.total} students
