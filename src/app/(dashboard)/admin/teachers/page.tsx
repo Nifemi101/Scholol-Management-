@@ -196,35 +196,34 @@ export default function TeachersPage() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    const { data: teachersData } = await supabase
-      .from("pre_registered_teachers")
-      .select("id, teacher_number, first_name, last_name, is_registered")
-      .order("created_at", { ascending: false });
+ const fetchData = async () => {
+  const { data: teachersData } = await supabase
+    .from('pre_registered_teachers')
+    .select('id, teacher_number, first_name, last_name, is_registered')
+    .order('created_at', { ascending: false })
 
-    const { data: subjectsData } = await supabase
-      .from("subjects")
-      .select("id, name")
-      .order("name");
+  const { data: subjectsData } = await supabase
+    .from('subjects')
+    .select('id, name')
+    .order('name')
 
-    const { data: teacherSubjectsData } = await supabase
-      .from("teacher_subjects")
-      .select("teacher_id, subjects(id, name)");
+  const { data: teacherSubjectsData } = await supabase
+    .from('teacher_subjects')
+    .select('teacher_id, subjects(id, name)')
 
-    if (teachersData) {
-      const enriched = teachersData.map((t: any) => ({
-        ...t,
-        subjects:
-          teacherSubjectsData
-            ?.filter((ts: any) => ts.teacher_id === t.id)
-            .map((ts: any) => ts.subjects) || [],
-      }));
-      setTeachers(enriched);
-    }
+  if (teachersData) {
+    const enriched = teachersData.map((t: any) => ({
+      ...t,
+      subjects: teacherSubjectsData
+        ?.filter((ts: any) => ts.teacher_id === t.id)
+        .map((ts: any) => ts.subjects) || [],
+    }))
+    setTeachers(enriched)
+  }
 
-    if (subjectsData) setSubjects(subjectsData);
-    setLoading(false);
-  };
+  if (subjectsData) setSubjects(subjectsData)
+  setLoading(false)
+}
 
   const handleDeleteConfirmed = async () => {
     if (!confirmTeacher) return;
@@ -246,32 +245,46 @@ export default function TeachersPage() {
     setDeleting(null);
   };
 
-  const handleSaveSubjects = async (
-    teacherId: string,
-    subjectIds: string[],
-  ) => {
-    // Delete existing assignments
-    await supabase
-      .from("teacher_subjects")
-      .delete()
-      .eq("teacher_id", teacherId);
+ const handleSaveSubjects = async (teacherId: string, subjectIds: string[]) => {
+  // Get the pre_registered_teachers id using teacher_number
+  const teacher = teachers.find(t => t.id === teacherId)
+  if (!teacher) return
 
-    // Insert new assignments
-    if (subjectIds.length > 0) {
-      await supabase
-        .from("teacher_subjects")
-        .insert(
-          subjectIds.map((subject_id) => ({
-            teacher_id: teacherId,
-            subject_id,
-          })),
-        );
+  const { data: preTeacher } = await supabase
+    .from('pre_registered_teachers')
+    .select('id')
+    .eq('teacher_number', teacher.teacher_number)
+    .single()
+
+  if (!preTeacher) {
+    alert('Could not find teacher record')
+    return
+  }
+
+  // Delete existing assignments using pre_registered_teachers id
+  await supabase
+    .from('teacher_subjects')
+    .delete()
+    .eq('teacher_id', preTeacher.id)
+
+  // Insert new assignments
+  if (subjectIds.length > 0) {
+    const { error } = await supabase
+      .from('teacher_subjects')
+      .insert(
+        subjectIds.map((subject_id) => ({
+          teacher_id: preTeacher.id,
+          subject_id,
+        }))
+      )
+    if (error) {
+      alert(`Failed to assign subjects: ${error.message}`)
+      return
     }
+  }
 
-    // Refresh data
-    await fetchData();
-  };
-
+  await fetchData()
+}
   const filtered = teachers.filter(
     (t) =>
       t.teacher_number.toLowerCase().includes(search.toLowerCase()) ||
