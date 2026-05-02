@@ -30,7 +30,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
       <aside className="w-56 bg-[#1e2a3b] text-white flex flex-col fixed h-full z-10">
         <div className="px-5 py-5 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
               S
             </div>
             <div>
@@ -52,7 +52,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
                 onClick={() => router.push(item.path)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   isActive
-                    ? 'bg-green-600 text-white font-medium'
+                    ? 'bg-blue-600 text-white font-medium'
                     : 'text-gray-300 hover:bg-white/10'
                 }`}
               >
