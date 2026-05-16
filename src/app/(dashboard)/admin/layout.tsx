@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -9,6 +10,8 @@ import {
   BookOpen,
   Library,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react'
 
 const navItems = [
@@ -22,16 +25,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/admin-login')
   }
 
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+
+  const handleNavClick = (path: string) => {
+    router.push(path)
+    setIsSidebarOpen(false)
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <aside className="w-56 bg-[#1e2a3b] text-white flex flex-col fixed h-full z-10">
-        <div className="px-5 py-5 border-b border-white/10">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#1e2a3b] text-white flex items-center justify-between px-4 z-20 shadow-md">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            A
+          </div>
+          <p className="text-sm font-bold">APEX</p>
+        </div>
+        <button onClick={toggleSidebar} className="p-2 hover:bg-white/10 rounded-lg">
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`w-64 bg-[#1e2a3b] text-white flex flex-col fixed h-full z-40 transition-transform duration-300 lg:translate-x-0 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="px-5 py-5 border-b border-white/10 hidden lg:block">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
               A
@@ -43,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 mt-16 lg:mt-0">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive =
@@ -52,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <button
                 key={item.path}
-                onClick={() => router.push(item.path)}
+                onClick={() => handleNavClick(item.path)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   isActive
                     ? 'bg-blue-600 text-white font-medium'
@@ -77,7 +114,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      <main className="ml-56 flex-1">
+      {/* Main Content */}
+      <main className="flex-1 lg:ml-64 pt-16 lg:pt-0">
         {children}
       </main>
     </div>

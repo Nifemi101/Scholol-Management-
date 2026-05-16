@@ -66,7 +66,7 @@ export default function AddTeacherPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="max-w-xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -91,7 +91,7 @@ export default function AddTeacherPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

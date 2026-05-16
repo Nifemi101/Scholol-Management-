@@ -172,7 +172,7 @@ export default function StudentsPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/admin')}
@@ -190,7 +190,7 @@ export default function StudentsPage() {
         </div>
         <button
           onClick={() => router.push('/admin/add-student')}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <PlusSquare size={16} />
           Add Student
@@ -198,7 +198,7 @@ export default function StudentsPage() {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-col md:flex-row gap-3">
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -209,12 +209,12 @@ export default function StudentsPage() {
             className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="relative">
+        <div className="relative w-full sm:w-48">
           <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className="pl-9 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="all">All Classes</option>
             {classes.map((cls) => (
@@ -230,12 +230,12 @@ export default function StudentsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
               <tr>
-                <th className="px-5 py-3 text-left">Student ID</th>
-                <th className="px-5 py-3 text-left">Full Name</th>
-                <th className="px-5 py-3 text-left">Class</th>
-                <th className="px-5 py-3 text-left">Sex</th>
-                <th className="px-5 py-3 text-left">Status</th>
-                <th className="px-5 py-3 text-left">Action</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Student ID</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Full Name</th>
+                <th className="px-4 sm:px-5 py-3 text-left hidden sm:table-cell">Class</th>
+                <th className="px-4 sm:px-5 py-3 text-left hidden md:table-cell">Sex</th>
+                <th className="px-4 sm:px-5 py-3 text-left hidden lg:table-cell">Status</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -250,36 +250,36 @@ export default function StudentsPage() {
               ) : (
                 filtered.map((student) => (
                   <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-3 font-mono font-medium text-blue-600">
+                    <td className="px-4 sm:px-5 py-3 font-mono font-medium text-blue-600 text-xs sm:text-sm">
                       {student.student_number}
                     </td>
-                    <td className="px-5 py-3 font-medium text-gray-800">
+                    <td className="px-4 sm:px-5 py-3 font-medium text-gray-800 text-xs sm:text-sm">
                       {student.first_name} {student.last_name}
                     </td>
-                    <td className="px-5 py-3 text-gray-600">
+                    <td className="px-4 sm:px-5 py-3 text-gray-600 text-xs sm:text-sm hidden sm:table-cell">
                       {(student.classes as any)?.name || (
                         <span className="text-gray-400 italic">No class</span>
                       )}
                     </td>
-                    <td className="px-5 py-3 capitalize text-gray-600">{student.sex}</td>
-                    <td className="px-5 py-3">
+                    <td className="px-4 sm:px-5 py-3 capitalize text-gray-600 text-xs sm:text-sm hidden md:table-cell">{student.sex}</td>
+                    <td className="px-4 sm:px-5 py-3 hidden lg:table-cell">
                       {student.is_registered ? (
-                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium">
                           Registered
                         </span>
                       ) : (
-                        <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium">
                           Pending
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3">
+                    <td className="px-4 sm:px-5 py-3">
                       <button
                         onClick={() => setConfirmStudent({ id: student.id, student_number: student.student_number })}
                         disabled={deleting === student.id}
-                        className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                        className="p-1.5 sm:p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                       >
-                        <Trash2 size={15} />
+                        <Trash2 size={14} className="sm:w-[15px] sm:h-[15px]" />
                       </button>
                     </td>
                   </tr>

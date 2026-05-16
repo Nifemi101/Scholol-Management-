@@ -89,7 +89,7 @@ export default function AddStudentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="max-w-xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -116,7 +116,7 @@ export default function AddStudentPage() {
         )}
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Student ID */}
             <div>
@@ -168,7 +168,7 @@ export default function AddStudentPage() {
             </div>
 
             {/* Sex and Class side by side */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Sex <span className="text-red-500">*</span>

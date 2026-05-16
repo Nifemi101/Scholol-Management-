@@ -145,24 +145,24 @@ export default function AdminDashboard() {
   return (
     <div className="flex-1 p-6">
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
           <BarChart2 size={22} className="text-blue-600" />
           Dashboard
         </h2>
-        <div className="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm">
+        <div className="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm w-full sm:w-auto">
           <span>Welcome,</span>
-          <span className="font-semibold text-blue-600">{adminName}</span>
+          <span className="font-semibold text-blue-600 truncate">{adminName}</span>
         </div>
       </div>
 
       {/* Greeting Banner */}
-      <div className="bg-linear-to-r from-blue-700 to-blue-500 rounded-2xl p-5 mb-6 text-white flex justify-between items-center">
+      <div className="bg-linear-to-r from-blue-700 to-blue-500 rounded-2xl p-5 mb-6 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h3 className="text-xl font-bold">
             {getGreeting()}, {adminName}!
           </h3>
-          <p className="text-blue-100 text-sm mt-1 flex items-center gap-3">
+          <p className="text-blue-100 text-sm mt-1 flex flex-wrap items-center gap-3">
             <span className="flex items-center gap-1">
               <Calendar size={14} />
               {formatDate(currentTime)}
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
         </div>
         <button
           onClick={() => router.push("/admin/add-student")}
-          className="bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2"
+          className="bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2 w-full md:w-auto justify-center"
         >
           <PlusSquare size={16} />
           Add Student

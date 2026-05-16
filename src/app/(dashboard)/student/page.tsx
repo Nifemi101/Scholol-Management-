@@ -143,22 +143,23 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center sticky top-0 lg:static z-10">
         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
           <BarChart2 size={20} className="text-blue-600" />
-          Student Dashboard
+          <span className="hidden sm:inline">Student Dashboard</span>
+          <span className="sm:hidden">Dashboard</span>
         </h2>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
             {getInitials()}
           </div>
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 truncate max-w-[100px] sm:max-w-none">
             {student?.first_name} {student?.last_name}
           </span>
         </div>
       </div>
 
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
         {/* Greeting Banner */}
         <div
           style={{
@@ -168,7 +169,7 @@ export default function StudentDashboard() {
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24" />
-          <div className="relative flex justify-between items-center">
+          <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <p className="text-blue-100 text-sm font-medium mb-1">{today}</p>
               <h3 className="text-2xl font-bold mb-1">
@@ -178,7 +179,7 @@ export default function StudentDashboard() {
                 {student?.class_name} · {currentTerm} · {academicYear}
               </p>
             </div>
-            <div className="hidden md:flex flex-col items-end gap-2">
+            <div className="flex flex-col items-start sm:items-end gap-2">
               <span className="bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-lg border border-white/30 flex items-center gap-2">
                 <GraduationCap size={14} />
                 STUDENT

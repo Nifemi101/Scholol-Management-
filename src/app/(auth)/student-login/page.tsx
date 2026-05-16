@@ -76,8 +76,8 @@ export default function StudentLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-md w-full max-w-md">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
             <GraduationCap size={20} className="text-blue-600" />

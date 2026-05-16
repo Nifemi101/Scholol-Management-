@@ -62,23 +62,32 @@ export default function TeacherDashboard() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      console.log("User:", user?.id);
       if (!user) {
         router.push("/teacher-login");
         return;
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("first_name, last_name")
         .eq("id", user.id)
         .single();
 
-      const { data: teacherProfile } = await supabase
+      console.log("Profile:", profile, "Error:", profileError?.message);
+
+      const { data: teacherProfile, error: teacherError } = await supabase
         .from("teacher_profiles")
         .select("teacher_number")
         .eq("id", user.id)
         .single();
 
+      console.log(
+        "Teacher Profile:",
+        teacherProfile,
+        "Error:",
+        teacherError?.message,
+      );
       if (!profile || !teacherProfile) {
         setLoading(false);
         return;
@@ -104,8 +113,8 @@ export default function TeacherDashboard() {
       const { data: teacherSubjects } = (await supabase
         .from("teacher_subjects")
         .select(`subjects ( id, name, class_id, classes ( name ) )`)
-        .eq("teacher_id", preTeacher.id)) as { 
-        data: Array<{ subjects: AssignedSubject | null }> | null 
+        .eq("teacher_id", preTeacher.id)) as {
+        data: Array<{ subjects: AssignedSubject | null }> | null;
       };
 
       if (teacherSubjects) {
@@ -119,7 +128,7 @@ export default function TeacherDashboard() {
           ...new Set(
             formatted
               .filter((s) => s?.class_id)
-              .map((s) => s.class_id as string)
+              .map((s) => s.class_id as string),
           ),
         ];
 
@@ -151,30 +160,33 @@ export default function TeacherDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center sticky top-0 lg:static z-10">
         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
           <BarChart2 size={20} className="text-blue-600" />
-          Teacher Dashboard
+          <span className="hidden sm:inline">Teacher Dashboard</span>
+          <span className="sm:hidden">Dashboard</span>
         </h2>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
             {getInitials()}
           </div>
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 truncate max-w-[100px] sm:max-w-none">
             {teacher?.first_name} {teacher?.last_name}
           </span>
         </div>
       </div>
 
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
         {/* Greeting Banner */}
         <div
-          style={{ background: "linear-gradient(to right, #1d4ed8, #2563eb, #3b82f6)" }}
+          style={{
+            background: "linear-gradient(to right, #1d4ed8, #2563eb, #3b82f6)",
+          }}
           className="rounded-2xl p-6 mb-6 text-white relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24" />
-          <div className="relative flex justify-between items-center">
+          <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <p className="text-blue-100 text-sm font-medium mb-1">{today}</p>
               <h3 className="text-2xl font-bold mb-1">
@@ -185,7 +197,7 @@ export default function TeacherDashboard() {
                 {subjects.length !== 1 ? "s" : ""} assigned this term
               </p>
             </div>
-            <div className="hidden md:flex flex-col items-end gap-2">
+            <div className="flex flex-col items-start sm:items-end gap-2">
               <span className="bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-lg border border-white/30 flex items-center gap-2">
                 <GraduationCap size={14} />
                 TEACHER
@@ -263,7 +275,10 @@ export default function TeacherDashboard() {
             <div className="p-5">
               <div className="flex items-center gap-4 mb-5">
                 <div
-                  style={{ background: "linear-gradient(to bottom right, #3b82f6, #1d4ed8)" }}
+                  style={{
+                    background:
+                      "linear-gradient(to bottom right, #3b82f6, #1d4ed8)",
+                  }}
                   className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-sm"
                 >
                   {getInitials()}
@@ -291,10 +306,7 @@ export default function TeacherDashboard() {
                   },
                   { label: "Term", value: currentTerm },
                 ].map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex justify-between py-2.5"
-                  >
+                  <div key={row.label} className="flex justify-between py-2.5">
                     <span className="text-xs text-gray-400 font-medium">
                       {row.label}
                     </span>
@@ -405,8 +417,8 @@ export default function TeacherDashboard() {
                     >
                       <td className="px-5 py-3.5">
                         <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-lg">
-                          {(subject.classes as { name: string } | null)
-                            ?.name || "All classes"}
+                          {(subject.classes as { name: string } | null)?.name ||
+                            "All classes"}
                         </span>
                       </td>
                       <td className="px-5 py-3.5">

@@ -308,7 +308,7 @@ export default function SubjectsPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <Library size={22} className="text-blue-600" />
@@ -320,7 +320,7 @@ export default function SubjectsPage() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <PlusSquare size={16} />
           Add Subject
@@ -328,7 +328,7 @@ export default function SubjectsPage() {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-col md:flex-row gap-3">
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search
             size={16}
@@ -342,18 +342,20 @@ export default function SubjectsPage() {
             className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <select
-          value={selectedClass}
-          onChange={(e) => setSelectedClass(e.target.value)}
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          <option value="all">All Classes</option>
-          {classes.map((cls) => (
-            <option key={cls.id} value={cls.id}>
-              {cls.name}
-            </option>
-          ))}
-        </select>
+        <div className="relative w-full sm:w-48">
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="all">All Classes</option>
+            {classes.map((cls) => (
+              <option key={cls.id} value={cls.id}>
+                {cls.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Subjects Table */}

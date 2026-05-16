@@ -323,7 +323,7 @@ export default function TeachersPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/admin")}
@@ -343,7 +343,7 @@ export default function TeachersPage() {
         </div>
         <button
           onClick={() => router.push("/admin/add-teacher")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <PlusSquare size={16} />
           Add Teacher
@@ -373,11 +373,11 @@ export default function TeachersPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
               <tr>
-                <th className="px-5 py-3 text-left">Teacher ID</th>
-                <th className="px-5 py-3 text-left">Full Name</th>
-                <th className="px-5 py-3 text-left">Assigned Subjects</th>
-                <th className="px-5 py-3 text-left">Status</th>
-                <th className="px-5 py-3 text-left">Actions</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Teacher ID</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Full Name</th>
+                <th className="px-4 sm:px-5 py-3 text-left hidden md:table-cell">Assigned Subjects</th>
+                <th className="px-4 sm:px-5 py-3 text-left hidden sm:table-cell">Status</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -398,49 +398,50 @@ export default function TeachersPage() {
                     key={teacher.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-5 py-3 font-mono font-medium text-blue-600">
+                    <td className="px-4 sm:px-5 py-3 font-mono font-medium text-blue-600 text-xs sm:text-sm">
                       {teacher.teacher_number}
                     </td>
-                    <td className="px-5 py-3 font-medium text-gray-800">
+                    <td className="px-4 sm:px-5 py-3 font-medium text-gray-800 text-xs sm:text-sm">
                       {teacher.first_name} {teacher.last_name}
                     </td>
-                    <td className="px-5 py-3">
+                    <td className="px-4 sm:px-5 py-3 hidden md:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {teacher.subjects && teacher.subjects.length > 0 ? (
                           teacher.subjects.map((s) => (
                             <span
                               key={s.id}
-                              className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium"
+                              className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-medium"
                             >
                               {s.name}
                             </span>
                           ))
                         ) : (
-                          <span className="text-gray-400 italic text-xs">
+                          <span className="text-gray-400 italic text-[10px]">
                             No subjects assigned
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3">
+                    <td className="px-4 sm:px-5 py-3 hidden sm:table-cell">
                       {teacher.is_registered ? (
-                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
                           Registered
                         </span>
                       ) : (
-                        <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-[10px] font-medium">
                           Pending
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
+                    <td className="px-4 sm:px-5 py-3">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <button
                           onClick={() => setAssigningTeacher(teacher)}
-                          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+                          className="flex items-center gap-1 px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+                          title="Assign Subjects"
                         >
                           <BookOpen size={12} />
-                          Assign Subjects
+                          <span className="hidden xs:inline">Assign</span>
                         </button>
                         <button
                           onClick={() =>
@@ -450,9 +451,9 @@ export default function TeachersPage() {
                             })
                           }
                           disabled={deleting === teacher.id}
-                          className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                          className="p-1.5 sm:p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} className="sm:w-[15px] sm:h-[15px]" />
                         </button>
                       </div>
                     </td>
