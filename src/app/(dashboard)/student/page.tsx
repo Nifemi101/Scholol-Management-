@@ -78,13 +78,22 @@ export default function StudentDashboard() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name, last_name")
+        .select("first_name, last_name, role")
         .eq("id", user.id)
         .single();
 
+      // Role check — redirect if not a student
+      if (!profile || profile.role !== "student") {
+        await supabase.auth.signOut();
+        router.push("/student-login");
+        return;
+      }
+
       const { data: studentProfile } = await supabase
         .from("student_profiles")
-        .select("student_number, sex, guardian_name, guardian_phone, class_id, classes(name)")
+        .select(
+          "student_number, sex, guardian_name, guardian_phone, class_id, classes(name)"
+        )
         .eq("id", user.id)
         .single();
 
@@ -99,7 +108,6 @@ export default function StudentDashboard() {
           guardian_phone: studentProfile.guardian_phone,
         });
 
-        // Get student subjects
         const { data: studentSubjects } = await supabase
           .from("student_subjects")
           .select("subjects(id, name)")
@@ -107,13 +115,10 @@ export default function StudentDashboard() {
 
         if (studentSubjects) {
           setSubjects(
-            studentSubjects
-              .map((ss: any) => ss.subjects)
-              .filter(Boolean)
+            studentSubjects.map((ss: any) => ss.subjects).filter(Boolean)
           );
         }
 
-        // Get student results
         const { data: studentResults } = await supabase
           .from("results")
           .select("id, score, grade, term, subjects(name)")
@@ -303,10 +308,7 @@ export default function StudentDashboard() {
                     value: student?.guardian_phone || "Not provided",
                   },
                 ].map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex justify-between py-2.5"
-                  >
+                  <div key={row.label} className="flex justify-between py-2.5">
                     <span className="text-xs text-gray-400 font-medium">
                       {row.label}
                     </span>
@@ -365,9 +367,7 @@ export default function StudentDashboard() {
                   className={`w-full ${action.bg} border ${action.border} rounded-xl p-3 flex items-center justify-between group hover:shadow-sm transition-all`}
                 >
                   <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm`}
-                    >
+                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                       <action.icon size={15} className={action.color} />
                     </div>
                     <div className="text-left">
@@ -419,13 +419,8 @@ export default function StudentDashboard() {
                   <tr>
                     <td colSpan={4} className="px-5 py-10 text-center">
                       <div className="flex flex-col items-center gap-2">
-                        <ClipboardList
-                          size={32}
-                          className="text-gray-300"
-                        />
-                        <p className="text-gray-400 text-sm">
-                          No results yet
-                        </p>
+                        <ClipboardList size={32} className="text-gray-300" />
+                        <p className="text-gray-400 text-sm">No results yet</p>
                         <p className="text-gray-300 text-xs">
                           Results will appear here once your teacher uploads
                           them

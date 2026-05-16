@@ -62,7 +62,6 @@ export default function TeacherDashboard() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      console.log("User:", user?.id);
       if (!user) {
         router.push("/teacher-login");
         return;
@@ -74,20 +73,12 @@ export default function TeacherDashboard() {
         .eq("id", user.id)
         .single();
 
-      console.log("Profile:", profile, "Error:", profileError?.message);
-
       const { data: teacherProfile, error: teacherError } = await supabase
         .from("teacher_profiles")
         .select("teacher_number")
         .eq("id", user.id)
         .single();
 
-      console.log(
-        "Teacher Profile:",
-        teacherProfile,
-        "Error:",
-        teacherError?.message,
-      );
       if (!profile || !teacherProfile) {
         setLoading(false);
         return;
