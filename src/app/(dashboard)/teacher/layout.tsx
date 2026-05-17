@@ -72,7 +72,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
             </div>
             <div>
               <p className="text-sm font-bold leading-tight">APEX</p>
-              <p className="text-xs text-gray-400">Management System</p>
+              <p className="text-xs text-gray-400">International School</p>
             </div>
           </div>
         </div>

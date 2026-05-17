@@ -51,8 +51,8 @@ export default function Home() {
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <School size={32} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">School MS</h1>
-          <p className="text-blue-100 text-sm mt-2">Management System</p>
+          <h1 className="text-3xl font-bold text-white">Apex</h1>
+          <p className="text-blue-100 text-sm mt-2">International School</p>
         </div>
 
         {/* Role Selection */}

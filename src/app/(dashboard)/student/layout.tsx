@@ -48,9 +48,9 @@ export default function StudentLayout({
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#1e2a3b] text-white flex items-center justify-between px-4 z-20 shadow-md">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-            S
+            A
           </div>
-          <p className="text-sm font-bold">School MS</p>
+          <p className="text-sm font-bold">APEX</p>
         </div>
         <button onClick={toggleSidebar} className="p-2 hover:bg-white/10 rounded-lg">
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
@@ -76,8 +76,8 @@ export default function StudentLayout({
               S
             </div>
             <div>
-              <p className="text-sm font-bold leading-tight">School MS</p>
-              <p className="text-xs text-gray-400">Management System</p>
+              <p className="text-sm font-bold leading-tight">APEX</p>
+              <p className="text-xs text-gray-400">International School</p>
             </div>
           </div>
         </div>
