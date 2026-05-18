@@ -73,7 +73,7 @@ export default function StudentLayout({
         <div className="px-5 py-5 border-b border-white/10 hidden lg:block">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-              S
+              A
             </div>
             <div>
               <p className="text-sm font-bold leading-tight">APEX</p>
