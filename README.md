@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+#  Apex School Management System
 
-## Getting Started
+A full-stack web application for managing school operations including student enrollment, teacher management, subject assignment, results, and more. Built with NextJS and Tailwind and deployed on Vercel.
 
-First, run the development server:
+**Live Demo:** [https://apex-int.vercel.app](https://apex-int.vercel.app)
+
+
+## Overview
+
+The Apex School Management System is a role-based platform designed to streamline school administration. It provides three separate portals for **Admins**, **Teachers**, and **Students**, each with tailored functionality and access control.
+
+The system is built with **Next.js 16 App Router**, **TypeScript**, **Tailwind CSS**, and **Supabase** for the backend, authentication, and database.
+
+### Security
+- Role-based access control (Admin, Teacher, Student)
+- Row Level Security (RLS) on all database tables
+- Route protection via Next.js middleware
+- Automatic role-based redirect on login
+- Session-based authentication via Supabase Auth
+
+---
+
+## Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| [Next.js 16](https://nextjs.org) | React framework with App Router |
+| [TypeScript](https://typescriptlang.org) | Type safety |
+| [Tailwind CSS](https://tailwindcss.com) | Utility-first styling |
+| [Supabase](https://supabase.com) | Database, Auth, and Storage |
+| [Lucide React](https://lucide.dev) | Icon library |
+| [Vercel](https://vercel.com) | Deployment and hosting |
+
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/school-management.git
+cd school-management
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+##  Authentication Flow
+### Admin
+```
+Admin created manually in Supabase Auth
+        ↓
+Profile inserted manually with role = 'admin'
+        ↓
+Logs in at /admin-login with email + password
+        ↓
+Role verified → redirected to /admin
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Teacher
+```
+Admin adds teacher to pre_registered_teachers
+        ↓
+Teacher visits /teacher-signup
+        ↓
+Enters Teacher ID → system verifies ID exists
+        ↓
+Teacher creates password
+        ↓
+Account created, profile auto-generated
+        ↓
+Logs in at /teacher-login with Teacher ID + password
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Student
+```
+Admin adds student to pre_registered_students
+        ↓
+Student visits /student-signup
+        ↓
+Enters Student ID → system verifies ID exists
+        ↓
+Student creates password
+        ↓
+Account created, profile auto-generated
+        ↓
+Logs in at /student-login with Student ID + password
+```
 
-## Deploy on Vercel
+> **Note:** Supabase Auth requires an email address. Teacher and student accounts use a generated email in the format `id@role.school.edu` (e.g., `stu001@student.school.edu`). Users never see or use this email.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### In Progress
+- [ ] Teacher — Enter student results
+- [ ] Teacher — Upload study materials
+- [ ] Teacher — Take attendance
+- [ ] Student — Select and view enrolled subjects
+- [ ] Student — View full results by term
+- [ ] Student — Access study materials
+- [ ] Student — Update guardian information
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m 'Add your feature'`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+
+> Built with Next.js, TypeScript, Tailwind CSS, and Supabase
